@@ -1,6 +1,9 @@
 # ============================================================
 # 部署到 Staging — Push 到 main 即自動部署
 # https://rhs.staging.ai-go.app
+#
+# 因為 repo 名 (RHS-Platform) != 子網域名 (rhs)，
+# 無法使用 reusable workflow，改用完整的 inline workflow。
 # ============================================================
 
 name: 部署到 Staging
@@ -13,9 +16,142 @@ on:
       - '*.md'
       - 'docs/**'
 
+env:
+  SUBDOMAIN: rhs                  # 子網域：rhs.staging.ai-go.app
+  REPO_NAME: RHS-Platform         # GitHub Repo 名稱
+
 jobs:
   deploy:
-    uses: AI-GO-APP/.github/.github/workflows/staging-deploy.yml@main
-    with:
-      project-name: rhs    # 子網域：rhs.staging.ai-go.app
-    secrets: inherit
+    name: 部署 rhs
+    runs-on: ubuntu-latest
+    concurrency:
+      group: staging-deploy-rhs
+      cancel-in-progress: false
+
+    steps:
+    # 使用 GitHub App 產生臨時 Token（1 小時有效）
+    - name: 產生 GitHub App Token
+      id: app-token
+      uses: actions/create-github-app-token@v1
+      with:
+        app-id: ${{ secrets.GH_APP_ID }}
+        private-key: ${{ secrets.GH_APP_PRIVATE_KEY }}
+        owner: ${{ github.repository_owner }}
+
+    # 透過 SSH 連入 VM 執行部署（自訂 script 分離 repo 與子網域）
+    - name: 透過 SSH 部署到 Staging VM
+      uses: appleboy/ssh-action@v1
+      env:
+        GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+      with:
+        host: ${{ secrets.STAGING_HOST }}
+        username: deploy
+        key: ${{ secrets.STAGING_SSH_KEY }}
+        command_timeout: 20m
+        envs: GITHUB_TOKEN
+        script: |
+          set -e
+          ORG="${{ github.repository_owner }}"
+          REPO="${{ env.REPO_NAME }}"
+          SUBDOMAIN="${{ env.SUBDOMAIN }}"
+          APP_DIR="/opt/apps/${SUBDOMAIN}"
+          DOMAIN="${SUBDOMAIN}.staging.ai-go.app"
+
+          echo "============================================================"
+          echo "🚀 部署 ${ORG}/${REPO} → https://${DOMAIN}"
+          echo "============================================================"
+
+          # 自動偵測 docker compose
+          if docker compose version &>/dev/null; then
+              DC="docker compose"
+          else
+              DC="docker-compose"
+          fi
+
+          # === 首次部署 ===
+          if [ ! -d "$APP_DIR/.git" ]; then
+              echo "📦 首次建站..."
+              mkdir -p "$APP_DIR"
+              git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/${ORG}/${REPO}.git" "$APP_DIR"
+              cd "$APP_DIR"
+              git checkout main
+
+              # 自動分配 Port
+              USED=$(grep -rhoP 'proxy_pass\s+http://127\.0\.0\.1:\K[0-9]+' /etc/nginx/sites-available/ 2>/dev/null | sort -n | uniq)
+              PORT=3001
+              while echo "$USED" | grep -q "^${PORT}$"; do PORT=$((PORT+1)); done
+
+              echo "PORT=${PORT}" > "$APP_DIR/.deploy-meta"
+              echo "DOMAIN=${DOMAIN}" >> "$APP_DIR/.deploy-meta"
+
+              # Nginx 反向代理
+              if [ ! -f "/etc/nginx/sites-available/${SUBDOMAIN}" ]; then
+                  sudo tee /etc/nginx/sites-available/${SUBDOMAIN} > /dev/null <<NGINX
+          server {
+              listen 80;
+              server_name ${DOMAIN};
+              client_max_body_size 50M;
+              location / {
+                  proxy_pass http://127.0.0.1:${PORT};
+                  proxy_http_version 1.1;
+                  proxy_set_header Upgrade \$http_upgrade;
+                  proxy_set_header Connection 'upgrade';
+                  proxy_set_header Host \$host;
+                  proxy_cache_bypass \$http_upgrade;
+                  proxy_set_header X-Real-IP \$remote_addr;
+                  proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+                  proxy_set_header X-Forwarded-Proto \$scheme;
+              }
+          }
+          NGINX
+                  sudo ln -sf /etc/nginx/sites-available/${SUBDOMAIN} /etc/nginx/sites-enabled/
+                  sudo nginx -t && sudo systemctl reload nginx
+                  sudo certbot --nginx -d "${DOMAIN}" --non-interactive --agree-tos --email admin@ai-go.app --redirect 2>/dev/null || echo "⚠️ SSL 稍後手動: sudo certbot --nginx -d ${DOMAIN}"
+              fi
+              echo "✅ 首次建站完成 | Port: ${PORT}"
+          else
+              # === 後續更新 ===
+              cd "$APP_DIR"
+              source .deploy-meta 2>/dev/null || true
+              git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${ORG}/${REPO}.git"
+              git fetch origin main
+              git reset --hard FETCH_HEAD
+              git remote set-url origin "https://github.com/${ORG}/${REPO}.git"
+              echo "✅ 程式碼已更新"
+          fi
+
+          # === 建置並啟動 ===
+          cd "$APP_DIR"
+          source .deploy-meta 2>/dev/null || true
+          export PORT="${PORT}"
+
+          COMPOSE_FILE=""
+          for f in docker-compose.staging.yml docker-compose.yml compose.yml; do
+              [ -f "$f" ] && COMPOSE_FILE="$f" && break
+          done
+
+          if [ -z "$COMPOSE_FILE" ]; then
+              echo "❌ 找不到 docker-compose 檔案"
+              exit 1
+          fi
+
+          # 確保 PORT 寫入 .env
+          if [ -f .env ]; then
+              grep -v "^PORT=" .env > .env.tmp 2>/dev/null || true
+              echo "PORT=${PORT}" >> .env.tmp
+              mv .env.tmp .env
+          else
+              echo "PORT=${PORT}" > .env
+          fi
+
+          $DC -f "$COMPOSE_FILE" up -d --build --remove-orphans
+          docker image prune -f 2>/dev/null || true
+
+          echo ""
+          echo "============================================================"
+          echo "✅ 部署完成"
+          echo "   📦 ${ORG}/${REPO}"
+          echo "   🏷️  $(git rev-parse --short HEAD)"
+          echo "   🌐 https://${DOMAIN}"
+          echo "============================================================"
+          $DC -f "$COMPOSE_FILE" ps
