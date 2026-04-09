@@ -1,0 +1,29 @@
+# 相依套件
+node_modules/
+
+# 環境變數（含 API Key，嚴禁 commit）
+.env
+.env.local
+.env.*.local
+
+# 建置產物
+dist/
+
+# 編輯器 / 系統檔
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Gemini Agent 工作目錄
+.agent/
+.agents/
+
+# 設計系統產出（開發參考用，不需版控）
+design-system/
+design_system_output.md
+
+# 腳本產出的暫存檔
+scripts/app_id.txt

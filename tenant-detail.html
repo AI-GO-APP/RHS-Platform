@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>物件詳情 - 示範包租代管</title>
+  <link rel="stylesheet" href="/src/css/style.css">
+  <style>
+    .property-hero {
+      height: 50vh;
+      background: var(--color-primary) center/cover no-repeat;
+    }
+  </style>
+</head>
+<body style="display:flex; flex-direction:column; min-height:100vh;">
+  <main style="padding-top: 80px; flex-grow:1;">
+    <div class="property-hero"></div>
+
+    <section class="section-padding">
+      <div id="property-detail">
+        <div class="container text-center">
+          <p class="text-muted">載入物件資訊中...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="/src/js/tenant-detail.js"></script>
+</body>
+</html>

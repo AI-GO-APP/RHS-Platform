@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>精選台灣質感好房 - 示範包租代管</title>
+  <link rel="stylesheet" href="/src/css/style.css">
+</head>
+<body style="display:flex; flex-direction:column; min-height:100vh;">
+  <main style="padding-top: 80px; flex-grow:1;">
+    <section class="section-padding bg-background">
+      <div class="container">
+        <h1 class="massive-title text-primary">尋找您的理想居所</h1>
+        <p class="text-muted" style="margin-bottom:var(--space-xl)">嚴選台灣高品質質感物件，由我們專業團隊維護管理，讓租屋不再是將就。</p>
+
+        <!-- 篩選列 -->
+        <div class="card flex items-center justify-between" style="padding:var(--space-md); margin-bottom:var(--space-2xl);">
+          <div class="flex gap-md" style="flex:1">
+            <input type="text" id="search-keyword" class="input" placeholder="搜尋區域 (例：台北 大安區)">
+            <select id="search-type" class="input" style="width:auto">
+              <option>不限房型</option>
+              <option>獨立套房</option>
+              <option>一房一廳</option>
+              <option>兩房一廳</option>
+            </select>
+          </div>
+          <button id="search-btn" class="btn btn-primary" style="margin-left:var(--space-md)">搜尋</button>
+        </div>
+
+        <!-- 房源列表動態注入區 -->
+        <div id="property-grid" class="grid grid-cols-3 gap-xl">
+           <p class="text-muted">載入中...</p>
+        </div>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="/src/js/tenant-listing.js"></script>
+</body>
+</html>

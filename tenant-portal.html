@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的預約進度 - 示範包租代管</title>
+  <link rel="stylesheet" href="/src/css/style.css">
+  <style>
+    .portal-header {
+      background: var(--color-primary);
+      color: white;
+      padding: var(--space-2xl) 0 var(--space-xl);
+    }
+    .status-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 0.85rem;
+      font-weight: bold;
+    }
+    .status-processing { background: #FEF3C7; color: #D97706; }
+    .status-success { background: #D1FAE5; color: #059669; }
+    
+    .tracking-timeline {
+      margin-top: var(--space-xl);
+      border-left: 2px solid var(--color-border);
+      padding-left: var(--space-lg);
+      margin-left: var(--space-md);
+    }
+    .track-item {
+      position: relative;
+      margin-bottom: var(--space-lg);
+    }
+    .track-item::before {
+      content: '';
+      position: absolute;
+      left: calc(-var(--space-lg) - 7px);
+      top: 4px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--color-border);
+    }
+    .track-item.active::before {
+      background: var(--color-primary);
+      box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.2);
+    }
+    .track-date {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      margin-bottom: 4px;
+    }
+    .track-title {
+      font-weight: bold;
+      color: var(--color-text);
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body style="display:flex; flex-direction:column; min-height:100vh;">
+  <main style="padding-top: 80px; flex-grow:1;">
+    <div class="portal-header">
+      <div class="container">
+        <h1 style="font-size:2rem; margin-bottom:var(--space-sm)">租戶服務專區</h1>
+        <p style="opacity:0.9">追蹤您的賞屋申請與租約進度</p>
+      </div>
+    </div>
+
+    <section class="section-padding">
+      <div class="container grid" style="grid-template-columns: 1fr 2fr; gap:var(--space-2xl);">
+        
+        <!-- 左側：申請列表（由 JS 動態填入）-->
+        <div id="active-bookings">
+          <h3 style="margin-bottom:var(--space-lg)">進行中的案件</h3>
+          <p class="text-muted">載入中...</p>
+        </div>
+
+        <!-- 右側：追蹤時間軸（由 JS 動態填入）-->
+        <div id="timeline-detail">
+          <div class="card" style="padding:var(--space-xl)">
+            <p class="text-muted text-center">請從左側選擇案件查看進度</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+  <script type="module" src="/src/js/tenant-portal.js"></script>
+</body>
+</html>

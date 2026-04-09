@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>示範包租代管 - 首頁</title>
+  <meta name="description" content="示範包租代管提供最有質感的台灣房地產租賃與代管服務。無論您是房東或尋找優質住宅的租客，我們為您打造至臻完美的居住體驗。">
+  <link rel="stylesheet" href="/src/css/style.css">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "示範包租代管",
+    "url": "https://demo-property.tw"
+  }
+  </script>
+  <style>
+    /* 專屬 Gateway 樣式 */
+    .hero-gateway {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: url('/images/hero.png') center/cover no-repeat;
+      position: relative;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(rgba(19, 78, 74, 0.4), rgba(15, 118, 110, 0.7));
+    }
+    .gateway-content {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      flex-grow: 1;
+      text-align: center;
+      color: white;
+      padding: var(--space-xl);
+    }
+    .split-portal {
+      display: flex;
+      gap: var(--space-xl);
+      margin-top: var(--space-2xl);
+    }
+    .portal-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      padding: var(--space-xl);
+      width: 320px;
+      text-align: center;
+      color: white;
+      transition: all 300ms ease;
+      cursor: pointer;
+    }
+    .portal-card:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+    .portal-card h2 {
+      color: white;
+      margin-bottom: var(--space-md);
+    }
+    .portal-btn {
+      display: inline-block;
+      margin-top: var(--space-lg);
+      padding: 12px 24px;
+      background: white;
+      color: var(--color-primary);
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      transition: background 200ms;
+    }
+    .portal-card:hover .portal-btn {
+      background: var(--color-cta);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="hero-gateway">
+    <div class="hero-overlay"></div>
+    <header style="position:relative; z-index:10; padding:var(--space-md) var(--space-xl); display:flex; justify-content:space-between; align-items:center;">
+      <h1 data-i18n="brand_name" style="color:white; font-size:1.5rem;" class="logo">SERENITY 示範包租代管</h1>
+      <div id="btn-lang-toggle" style="color:white; font-weight:bold; cursor:pointer;" class="lang-switcher-text">EN</div>
+    </header>
+
+    <div class="gateway-content">
+      <h1 data-i18n="gateway_title" class="massive-title" style="color:white; margin-bottom:var(--space-md); text-shadow: 0 4px 12px rgba(0,0,0,0.3);">您的最佳資產管理與居住體驗</h1>
+      <p data-i18n="gateway_desc" style="font-size: 1.25rem; max-width: 600px; opacity: 0.9;">我們重新定義台灣的租賃市場，結合科技與美學，為房東與租客創造雙贏的質感生活。</p>
+      
+      <div class="split-portal">
+        <a href="/landlord-service.html" style="text-decoration: none;">
+          <div class="portal-card">
+            <h2 data-i18n="gateway_landlord">我是房東</h2>
+            <p data-i18n="gateway_landlord_desc">了解八大託管服務，讓您的資產完美升級，輕鬆創造穩定收益。</p>
+            <span data-i18n="gateway_landlord_btn" class="portal-btn">進入託管服務</span>
+          </div>
+        </a>
+        <a href="/tenant-listing.html" style="text-decoration: none;">
+          <div class="portal-card">
+            <h2 data-i18n="gateway_tenant">我是租客</h2>
+            <p data-i18n="gateway_tenant_desc">尋找精選質感好房，線上預約賞屋與進度追蹤，享受舒適生活。</p>
+            <span data-i18n="gateway_tenant_btn" class="portal-btn">尋找理想居所</span>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    import { updateDOM, toggleLanguage } from '/src/js/i18n.js';
+    
+    document.addEventListener('DOMContentLoaded', updateDOM);
+    document.getElementById('btn-lang-toggle').addEventListener('click', toggleLanguage);
+  </script>
+</body>
+</html>
