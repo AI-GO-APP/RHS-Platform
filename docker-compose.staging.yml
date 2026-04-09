@@ -1,0 +1,15 @@
+services:
+  web:
+    build:
+      context: .
+      args:
+        # Vite build-time 變數（可從 .env 抽換以連接不同租戶）
+        VITE_AIGO_APP_SLUG: ${VITE_AIGO_APP_SLUG:-6d767888869d}
+        VITE_AIGO_API_BASE: ${VITE_AIGO_API_BASE:-https://ai-go.app/api/v1}
+        VITE_APP_DOMAIN: ${VITE_APP_DOMAIN:-rhs-platform}
+    ports:
+      - "${PORT:-3001}:80"
+    restart: unless-stopped
+    environment:
+      # Nginx runtime 變數（envsubst 注入至 nginx.conf）
+      - AIGO_API_KEY=${AIGO_API_KEY}

@@ -63,7 +63,7 @@ async function main() {
   // === 3. 設定 allowed_origins ===
   console.log('\n=== Step 3: 設定 allowed_origins ===');
   const settingsR = await api('PATCH', `/integrations/${APP_ID}/settings`, {
-    allowed_origins: ['http://localhost:5181'],
+    allowed_origins: ['http://localhost:5181', 'https://rhs.staging.ai-go.app'],
   }, auth);
   console.log(`  ${settingsR.ok ? '✅' : '⚠️'} Settings: ${settingsR.status}`);
   results.settings = { status: settingsR.status, ok: settingsR.ok };
