@@ -7,10 +7,10 @@ require('dotenv').config();
 const fs = require('fs');
 
 const API_BASE = process.env.VITE_AIGO_API_BASE || 'https://ai-go.app/api/v1';
-const API_KEY = process.env.VITE_AIGO_API_KEY;
+const API_KEY = process.env.AIGO_API_KEY;
 const APP_SLUG = process.env.VITE_AIGO_APP_SLUG || '6d767888869d';
-const BUILDER_EMAIL = 'playground-super-admin@ai-go.app';
-const BUILDER_PASSWORD = 'playground-super-admin1234!';
+const BUILDER_EMAIL = process.env.AIGO_BUILDER_EMAIL || 'playground-super-admin@ai-go.app';
+const BUILDER_PASSWORD = process.env.AIGO_BUILDER_PASSWORD || 'playground-super-admin1234!';
 
 async function api(method, path, body = null, headers = {}) {
   const url = `${API_BASE}${path}`;

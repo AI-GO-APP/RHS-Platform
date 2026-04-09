@@ -3,8 +3,9 @@ node_modules/
 
 # 環境變數（含 API Key，嚴禁 commit）
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
+!.env.production
 
 # 建置產物
 dist/

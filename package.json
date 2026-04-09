@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "seed": "node scripts/inject-properties.cjs",
+    "setup": "node scripts/setup-references.cjs",
+    "test": "node scripts/e2e-api-test.mjs"
   },
   "devDependencies": {
     "dotenv": "^17.4.1",

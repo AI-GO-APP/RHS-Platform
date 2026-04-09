@@ -7,7 +7,7 @@
 require('dotenv').config();
 
 const API_BASE = process.env.VITE_AIGO_API_BASE;
-const API_KEY = process.env.VITE_AIGO_API_KEY;
+const API_KEY = process.env.AIGO_API_KEY;
 const APP_DOMAIN = process.env.VITE_APP_DOMAIN || 'rhs-platform';
 
 const properties = [

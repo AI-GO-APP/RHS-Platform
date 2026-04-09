@@ -33,7 +33,7 @@ export default defineConfig(({ mode }) => {
           rewrite: (path) => path.replace(/^\/api\/open/, '/open'),
           configure: (proxy) => {
             proxy.on('proxyReq', (proxyReq) => {
-              proxyReq.setHeader('X-API-Key', env.VITE_AIGO_API_KEY);
+              proxyReq.setHeader('X-API-Key', env.AIGO_API_KEY);
             });
           },
         },
